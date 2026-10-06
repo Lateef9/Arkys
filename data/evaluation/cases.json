@@ -1,0 +1,138 @@
+[
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa01",
+    "inputText": "Hypertension history. Takes Amlodipine 5mg once daily.",
+    "expectedOutput": {
+      "events": [
+        {
+          "eventType": "DIAGNOSIS",
+          "entity": "hypertension",
+          "status": "ACTIVE",
+          "value": {}
+        },
+        {
+          "eventType": "MEDICATION",
+          "entity": "amlodipine",
+          "status": "ACTIVE",
+          "value": { "dose": "5mg" }
+        }
+      ]
+    }
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa02",
+    "inputText": "Labs: HbA1c 7.4 percent. LDL cholesterol 168 mg/dL. Creatinine 1.1 mg/dL.",
+    "expectedOutput": {
+      "events": [
+        {
+          "eventType": "LAB_RESULT",
+          "entity": "hba1c",
+          "status": "ACTIVE",
+          "value": { "value": 7.4 }
+        },
+        {
+          "eventType": "LAB_RESULT",
+          "entity": "ldl_cholesterol",
+          "status": "ACTIVE",
+          "value": { "value": 168 }
+        },
+        {
+          "eventType": "LAB_RESULT",
+          "entity": "creatinine",
+          "status": "ACTIVE",
+          "value": { "value": 1.1 }
+        }
+      ]
+    }
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa03",
+    "inputText": "Hinglish: headache 3 days. Patient still takes Amlodipine 5mg.",
+    "expectedOutput": {
+      "events": [
+        {
+          "eventType": "SYMPTOM",
+          "entity": "headache",
+          "status": "ACTIVE",
+          "value": { "duration": "3 days" }
+        },
+        {
+          "eventType": "MEDICATION",
+          "entity": "amlodipine",
+          "status": "ACTIVE",
+          "value": { "dose": "5mg" }
+        }
+      ]
+    }
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa04",
+    "inputText": "Patient stopped taking Amlodipine.",
+    "expectedOutput": {
+      "events": [
+        {
+          "eventType": "MEDICATION",
+          "entity": "amlodipine",
+          "status": "INACTIVE",
+          "value": {}
+        }
+      ]
+    }
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa05",
+    "inputText": "EVAL: Patient takes Metformin 500mg twice daily.",
+    "expectedOutput": {
+      "events": [
+        {
+          "eventType": "MEDICATION",
+          "entity": "metformin",
+          "status": "ACTIVE",
+          "value": { "dose": "500mg" }
+        }
+      ]
+    }
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa06",
+    "inputText": "EVAL: BP dawai Telmisartan 40mg leta hoon.",
+    "expectedOutput": {
+      "events": [
+        {
+          "eventType": "MEDICATION",
+          "entity": "telmisartan",
+          "status": "ACTIVE",
+          "value": { "dose": "40mg" }
+        }
+      ]
+    }
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa07",
+    "inputText": "EVAL FAIL: Patient takes Amlodipine 5mg daily.",
+    "expectedOutput": {
+      "events": [
+        {
+          "eventType": "MEDICATION",
+          "entity": "amlodipine",
+          "status": "ACTIVE",
+          "value": { "dose": "5mg" }
+        }
+      ]
+    }
+  },
+  {
+    "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa08",
+    "inputText": "EVAL UNKNOWN: obscure note with no mock fixture.",
+    "expectedOutput": {
+      "events": [
+        {
+          "eventType": "SYMPTOM",
+          "entity": "chest_pain",
+          "status": "ACTIVE",
+          "value": {}
+        }
+      ]
+    }
+  }
+]

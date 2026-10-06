@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import request from "supertest";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import * as llmClient from "../src/ai/client.js";
@@ -43,6 +44,7 @@ describeIfDb("POST /api/encounters/:id/extract", () => {
     if (!isSupabaseConfigured()) {
       throw new Error("Supabase env required");
     }
+    execSync("npm run db:seed", { stdio: "inherit" });
   });
 
   it("returns 404 for unknown encounter", async () => {
@@ -78,7 +80,8 @@ describeIfDb("POST /api/encounters/:id/extract", () => {
     expect(amlo?.value.dose).toBe("5mg");
     expect(amlo?.evidence.sourceText).toBeTruthy();
 
-    expect(response.body.data.patientStateRows).toBe(0);
+    // Deterministic state recompute runs after extract (not LLM-written).
+    expect(Array.isArray(response.body.data.patientState)).toBe(true);
   });
 
   it("extracts April encounter as amlodipine INACTIVE", async () => {

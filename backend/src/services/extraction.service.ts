@@ -1,7 +1,10 @@
 import { extractFromText } from "../ai/extractor.js";
 import { AppError } from "../middleware/error.middleware.js";
+import { conflictRepository } from "../repositories/conflict.repository.js";
 import { encounterRepository } from "../repositories/encounter.repository.js";
 import { eventRepository } from "../repositories/event.repository.js";
+import { stateRepository } from "../repositories/state.repository.js";
+import { intelligenceService } from "./intelligence.service.js";
 import { normalizeExtractedEvents } from "./normalization.service.js";
 
 export const extractionService = {
@@ -13,6 +16,10 @@ export const extractionService = {
 
     const extracted = await extractFromText(encounter.rawText);
     const normalized = normalizeExtractedEvents(extracted.events);
+
+    // Clear derived rows before mutating events so FKs never block deletes.
+    await conflictRepository.replaceForPatient(encounter.patientId, []);
+    await stateRepository.replaceForPatient(encounter.patientId, []);
 
     // Re-extract replaces prior events for this encounter only (history of other encounters kept).
     await eventRepository.deleteByEncounterId(encounterId);
@@ -34,16 +41,15 @@ export const extractionService = {
       saved.push(record);
     }
 
-    // Explicit guarantee for Phase 4: extractor never writes patient_state.
-    const stateCount = await eventRepository.countPatientState(
-      encounter.patientId,
-    );
+    // Deterministic recompute — LLM never writes patient_state.
+    const recomputed = await intelligenceService.recompute(encounter.patientId);
 
     return {
       encounterId: encounter.id,
       patientId: encounter.patientId,
       events: saved,
-      patientStateRows: stateCount,
+      patientState: recomputed.state,
+      conflicts: recomputed.conflicts,
     };
   },
 };

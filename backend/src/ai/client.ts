@@ -86,6 +86,43 @@ const MOCK_BY_TEXT: Record<string, ExtractionOutput> = {
       },
     ],
   },
+  "EVAL: Patient takes Metformin 500mg twice daily.": {
+    events: [
+      {
+        eventType: "MEDICATION",
+        entity: "metformin",
+        value: { dose: "500mg", frequency: "twice daily" },
+        status: "ACTIVE",
+        confidence: 0.91,
+        evidenceText: "Patient takes Metformin 500mg twice daily.",
+      },
+    ],
+  },
+  "EVAL: BP dawai Telmisartan 40mg leta hoon.": {
+    events: [
+      {
+        eventType: "MEDICATION",
+        entity: "telmisartan",
+        value: { dose: "40mg" },
+        status: "ACTIVE",
+        confidence: 0.9,
+        evidenceText: "BP dawai Telmisartan 40mg leta hoon.",
+      },
+    ],
+  },
+  // Intentional mismatch vs evaluation ground truth (dose 10mg vs expected 5mg).
+  "EVAL FAIL: Patient takes Amlodipine 5mg daily.": {
+    events: [
+      {
+        eventType: "MEDICATION",
+        entity: "amlodipine",
+        value: { dose: "10mg" },
+        status: "ACTIVE",
+        confidence: 0.88,
+        evidenceText: "Patient takes Amlodipine 5mg daily.",
+      },
+    ],
+  },
 };
 
 export type LlmMessage = {

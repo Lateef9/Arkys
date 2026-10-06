@@ -15,7 +15,7 @@ const ENTITY_ALIASES: Record<string, string> = {
   amlodipine: "amlodipine",
 };
 
-function normalizeEntity(entity: string): string {
+export function normalizeEntity(entity: string): string {
   const key = entity.trim().toLowerCase();
   return ENTITY_ALIASES[key] ?? key.replace(/\s+/g, "_");
 }

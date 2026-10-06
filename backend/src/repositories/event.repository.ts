@@ -23,13 +23,89 @@ export type ClinicalEventRecord = {
   status: string;
   confidence: number | null;
   occurredAt: string;
-  evidence: {
+  evidence?: {
     id: string;
     sourceText: string;
   };
 };
 
+export type EventEvidenceRecord = {
+  id: string;
+  eventId: string;
+  sourceType: string;
+  sourceId: string;
+  sourceText: string;
+  startOffset: number | null;
+  endOffset: number | null;
+  createdAt: string;
+};
+
+function mapEvent(row: Record<string, unknown>): ClinicalEventRecord {
+  return {
+    id: row.id as string,
+    patientId: row.patient_id as string,
+    encounterId: row.encounter_id as string,
+    eventType: row.event_type as string,
+    entity: row.entity as string,
+    value: (row.value as Record<string, unknown>) ?? {},
+    status: row.status as string,
+    confidence: (row.confidence as number | null) ?? null,
+    occurredAt: row.occurred_at as string,
+  };
+}
+
 export const eventRepository = {
+  async listByPatientId(patientId: string): Promise<ClinicalEventRecord[]> {
+    const { data, error } = await getSupabase()
+      .from("clinical_events")
+      .select("*")
+      .eq("patient_id", patientId)
+      .order("occurred_at", { ascending: true });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return ((data ?? []) as Record<string, unknown>[]).map(mapEvent);
+  },
+
+  async findById(id: string): Promise<ClinicalEventRecord | null> {
+    const { data, error } = await getSupabase()
+      .from("clinical_events")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data ? mapEvent(data as Record<string, unknown>) : null;
+  },
+
+  async listEvidenceByEventId(eventId: string): Promise<EventEvidenceRecord[]> {
+    const { data, error } = await getSupabase()
+      .from("event_evidence")
+      .select("*")
+      .eq("event_id", eventId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return ((data ?? []) as Record<string, unknown>[]).map((row) => ({
+      id: row.id as string,
+      eventId: row.event_id as string,
+      sourceType: row.source_type as string,
+      sourceId: row.source_id as string,
+      sourceText: row.source_text as string,
+      startOffset: (row.start_offset as number | null) ?? null,
+      endOffset: (row.end_offset as number | null) ?? null,
+      createdAt: row.created_at as string,
+    }));
+  },
+
   async deleteByEncounterId(encounterId: string): Promise<void> {
     const { error } = await getSupabase()
       .from("clinical_events")

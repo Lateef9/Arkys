@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import request from "supertest";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createApp } from "../src/app.js";
@@ -31,6 +32,7 @@ describeIfDb("Patients + Encounters API (Supabase)", () => {
     if (!isSupabaseConfigured()) {
       throw new Error("Supabase env required for integration tests");
     }
+    execSync("npm run db:seed", { stdio: "inherit" });
   });
 
   it("lists patients including Rajesh Kumar", async () => {
